@@ -1,4 +1,20 @@
-extends  ../../layout/default.pug
+extends  ../../layout/default.pug  
+//-kế thừa layout
+include ../../mixins/box-head.pug
+//-nhúng vào 
 
 block main 
-  h1 Sản phẩm
+  .container.my-3
+    .row
+      .col-12
+        +box-head("Danh sách sản phẩm")
+    .row
+      .col-4.mb-3
+        .product-item
+          .inner-image
+            img(src="https://bizweb.dktcdn.net/thumb/grande/100/439/998/products/smart-lg-4k-75-inch-75uq8000psc-01-optimized.jpg?v=1719053905877", alt="iPhone 9")
+          .inner-content
+            h3.inner-title Tivi siêu rộng
+            .inner-price-new 1000$
+            .inner-price-old 600$
+            .inner-discount -40%
