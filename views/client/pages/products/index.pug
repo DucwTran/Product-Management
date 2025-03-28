@@ -9,12 +9,13 @@ block main
       .col-12
         +box-head("Danh sách sản phẩm")
     .row
-      .col-4.mb-3
-        .product-item
-          .inner-image
-            img(src="https://bizweb.dktcdn.net/thumb/grande/100/439/998/products/smart-lg-4k-75-inch-75uq8000psc-01-optimized.jpg?v=1719053905877", alt="iPhone 9")
-          .inner-content
-            h3.inner-title Tivi siêu rộng
-            .inner-price-new 1000$
-            .inner-price-old 600$
-            .inner-discount -40%
+      each item in products
+        .col-4.mb-3
+          .product-item
+            .inner-image
+              img(src=item.thumbnail , alt=item.title)
+            .inner-content
+              h3.inner-title #{item.title}
+              .inner-price-new #{item.newPrice}
+              .inner-price-old #{item.price}$
+              .inner-discount -#{item.discount}%
