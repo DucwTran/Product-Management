@@ -4,6 +4,7 @@ require("dotenv").config();
 const database = require("./config/database")
 
 const route = require("./routes/client/index.route");
+const routeAdmin = require("./routes/admin/index.route");
 
 database.connect();
 
@@ -17,7 +18,11 @@ app.use(express.static("public"));
 
 //Route
 route(app);
+routeAdmin(app);
 
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
 });
+
+
+//route ----(gọi đến)-----> controller -----(không chứa logic nghiệp vụ, tương tác với model, dùng method của model/class để tạo ra data, trả ra giao diện) -----> 
