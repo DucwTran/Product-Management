@@ -1,48 +1,78 @@
 const Product = require("../../models/product.model");
+const filterStatusHelper = require("../../helpers/filterStatus");
+const searchHelper = require("../../helpers/search");
 
 // [GET] /admin/product
 module.exports.index = async (req, res) => {
   //res, req có nhiều phương thức lắm
-  let filterStatus = [
-    {
-      name: "Tất cả",
-      status: "",
-      class: "",
-    },
-    {
-      name: "Hoạt động",
-      status: "active",
-      class: "",
-    },
-    {
-      name: "Dừng hoạt động",
-      status: "inactive",
-      class: "",
-    },
-  ];
-
-  if (req.query.status) {
-    const index = filterStatus.findIndex(
-      (item) => item.status == req.query.status
-    );
-    filterStatus[index].class = "active";
-  } else {
-    const index = filterStatus.findIndex((item) => item.status == "");
-    filterStatus[index].class = "active";
-  }
+  const filterStatus = filterStatusHelper(req.query); // gọi hàm filterStatusHelper để lấy ra các trạng thái sản phẩm
 
   let find = {
     deleted: false,
   };
-  if(req.query.status) {
+  if (req.query.status) {
     find.status = req.query.status;
   }
 
-  const products = await Product.find(find); //find là method của mongoose định nghĩa do Product là 1 schema
+  const objectSearch = searchHelper(req.query);
+  if (objectSearch.regex) {
+    find.title = objectSearch.regex;
+  }
+
+  //pagination
+  let objectPagination = {
+    currentPage: 1,
+    limitedItem: 4,
+  };
+  if (req.query.page) {
+    objectPagination.currentPage = parseInt(req.query.page);
+  }
+  objectPagination.skip =
+    (objectPagination.currentPage - 1) * objectPagination.limitedItem;
+
+  const countProduct = await Product.countDocuments(find);
+  const totalPage = Math.ceil(countProduct / objectPagination.limitedItem);
+  objectPagination.totalPage = totalPage;
+  //End Pagination
+
+  const products = await Product.find(find)
+    .limit(objectPagination.limitedItem)
+    .skip(objectPagination.skip); //find là method của mongoose định nghĩa do Product là 1 schema
 
   res.render("admin/pages/product/index", {
     pageTitle: "Trang sản phẩm",
     products: products,
     filterStatus: filterStatus,
+    keyword: objectSearch.keyword,
+    pagination: objectPagination,
   });
+};
+
+// [PATCH] /admin/product/change-status/:status/:id
+module.exports.changeStatus = async (req, res) => {
+  const status = req.params.status;
+  const id = req.params.id;
+
+  await Product.updateOne({ _id: id }, { status: status });
+
+  res.redirect("/admin/product");
+};
+
+// [PATCH] /admin/products/change-multi
+module.exports.changeMulti = async (req, res) => {
+  const type = req.body.type;
+  const ids = req.body.ids.split(", ");
+
+  switch (type) {
+      case "active":
+          await Product.updateMany({ _id: { $in: ids } }, { status: "active" });
+          break;
+      case "inactive":
+          await Product.updateMany({ _id: { $in: ids } }, { status: "inactive" });
+          break;
+      default:
+          break;
+  }
+
+  res.redirect("back");
 };

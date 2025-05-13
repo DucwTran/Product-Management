@@ -1,20 +1,23 @@
 const express = require("express");
-require("dotenv").config();
-
 const database = require("./config/database")
-
 const systemConfig = require("./config/system")
-
 const route = require("./routes/client/index.route");
 const routeAdmin = require("./routes/admin/index.route");
-
+const methodOverride = require("method-override");
+require("dotenv").config();
 database.connect();
+
+const bodyParser = require("body-parser");
 
 const app = express();
 const port = process.env.PORT;
 
 app.set("views", "./views");
 app.set("view engine", "pug");
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(methodOverride("_method"));
 
 //App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;

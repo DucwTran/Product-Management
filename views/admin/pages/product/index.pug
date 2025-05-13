@@ -1,47 +1,67 @@
 extends ../../layout/default.pug
 
+include ../../mixin/search.pug
+include ../../mixin/changeStatus.pug
+include ../../mixin/pagination.pug
+
 block main
   h1 Danh sách sản phẩm
 
   .card.mb-3
-  .card-header Bộ lọc và Tìm kiếm
-  .card-body
-    each item in filterStatus   
-      button(
-        class=`btn btn-sm ml-1 btn-outline-success ${item.class}`
-        button-status=item.status
-      ) #{item.name}
+    .card-header Bộ lọc và Tìm kiếm
+    .card-body
+      .row.mb-3
+        .col-6
+          each item in filterStatus
+            button(
+              class=`btn btn-sm ml-1 btn-outline-success ${(item.class)}`
+              button-status=item.status
+            ) #{item.name}
+        +search(keyword)
 
-    .card.mb-3
-  .card-header Danh sách sản phẩm
-  .card-body
-    table.table.table-hover.table-sm
-      thead
-        tr
-          th STT
-          th Hình ảnh
-          th Tiêu đề 
-          th Giá
-          th Trạng thái
-          th Hành động
-      tbody
-        each item, index in products 
+  .card.mb-3
+    .card-header Danh sách sản phẩm
+    .card-body
+      +changeStatus(prefixAdmin)
+
+      table(
+        class="table table-sm table-hover"
+        checkbox-multi
+      )
+        thead
           tr
-          td #{index + 1}
-          td
-            img(
-              src=item.thumbnail,
-              alt=item.title,
-              width="100px",
-              height="auto"
-            )
-          td #{item.title}
-          td #{item.price}$
-          td
-            if(item.status == "active") 
-              a(href="#" class="badge badge-success") Hoạt động
-            else
-              a(href="#" class="badge badge-warning") Dừng hoạt động
-          td
-            button(class="btn btn-warning btn-sm") Sửa
-            button(class="btn btn-danger btn-sm ml-1") Xoá
+            th: input(type="checkbox" name="checkall")
+            th STT
+            th Hình ảnh
+            th Tiêu đề 
+            th Giá
+            th Trạng thái
+            th Hành động
+        tbody
+          each item, index in products 
+            tr
+              td: input(type="checkbox" name="id" value=item.id)
+              td #{index + 1}
+              td
+                img(src=item.thumbnail, alt=item.title, width="100px", height="auto")
+              td #{item.title}
+              td #{item.price}$
+              td
+                if item.status == "active" 
+                  a(href="javascript:;" class="badge badge-success" button-change-status data-status="active" data-id=item.id) Hoạt động
+                else
+                  a(href="javascript:;" class="badge badge-warning" button-change-status data-status="inactive" data-id=item.id) Dừng hoạt động
+              td
+                button(class="btn btn-warning btn-sm") Sửa
+                button(class="btn btn-danger btn-sm ml-1") Xoá
+
+      +pagination(pagination)
+
+  form(
+    action=""
+    method="POST"
+    id="form-change-status"
+    data-path=`${prefixAdmin}/product/change-status`
+  )
+
+  script(src="/admin/js/product.js")
