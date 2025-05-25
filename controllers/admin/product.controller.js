@@ -36,6 +36,7 @@ module.exports.index = async (req, res) => {
   //End Pagination
 
   const products = await Product.find(find)
+    .sort({ position: "desc" })
     .limit(objectPagination.limitedItem)
     .skip(objectPagination.skip); //find là method của mongoose định nghĩa do Product là 1 schema
 
@@ -55,6 +56,8 @@ module.exports.changeStatus = async (req, res) => {
 
   await Product.updateOne({ _id: id }, { status: status });
 
+  req.flash("success", "Cập nhật trạng thái sản phẩm thành công");
+
   res.redirect("/admin/product");
 };
 
@@ -64,15 +67,47 @@ module.exports.changeMulti = async (req, res) => {
   const ids = req.body.ids.split(", ");
 
   switch (type) {
-      case "active":
-          await Product.updateMany({ _id: { $in: ids } }, { status: "active" });
-          break;
-      case "inactive":
-          await Product.updateMany({ _id: { $in: ids } }, { status: "inactive" });
-          break;
-      default:
-          break;
+    case "active":
+      await Product.updateMany({ _id: { $in: ids } }, { status: "active" });
+      req.flash("success", `Cập nhật thành công ${ids.length} sản phẩm`);
+      break;
+    case "inactive":
+      await Product.updateMany({ _id: { $in: ids } }, { status: "inactive" });
+      req.flash("success", `Cập nhật thành công ${ids.length} sản phẩm`);
+      break;
+    case "delete-all":
+      await Product.updateMany(
+        { _id: { $in: ids } },
+        { deleted: "true", deletedAt: new Date() }
+      );
+      req.flash("success", `Xóa thành công ${ids.length} sản phẩm`);
+    case "change-position":
+      for (const item of ids) {
+        let [id, position] = item.split("-");
+        position = parseInt(position);
+        await Product.updateOne({ _id: id }, { position: position });
+      }
+      req.flash("success", `Cập nhật thành công vị trí`);
+    default:
+      break;
   }
 
   res.redirect("back");
+};
+
+// [DELETE] /admin/product/delete/:id
+module.exports.deleteItem = async (req, res) => {
+  const id = req.params.id;
+
+  // await Product.deleteOne({ _id: id });
+  await Product.updateOne(
+    { _id: id },
+    {
+      deleted: true,
+      deletedAt: new Date(),
+    }
+  );
+  req.flash("success", `Xóa thành công sản phẩm`);
+
+  res.redirect("/admin/product");
 };

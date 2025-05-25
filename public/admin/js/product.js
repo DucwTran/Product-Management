@@ -65,12 +65,28 @@ if (formChangeMulti) {
       "input[name='id']:checked"
     );
 
+    const typeChange = e.target.elements.type.value;
+    if(typeChange === "delete-all") {
+      const isConfirm = confirm('Bạn có chắc muốn xóa hết không?')
+
+      if(!isConfirm) {
+        return;
+      }
+    }
+
     if (inputsChecked.length > 0) {
       let ids = [];
       const inputIds = formChangeMulti.querySelector("input[name='ids']");
       inputsChecked.forEach((input) => {
         const id = input.value;
-        ids.push(id);
+
+        if(typeChange === "change-position") {
+          const position = input.closest("tr").querySelector("input[name='position']").value;
+          ids.push(`${id}-${position}`)
+        }
+        else {
+          ids.push(id);
+        }
       });
 
       inputIds.value = ids.join(", ");
@@ -81,3 +97,25 @@ if (formChangeMulti) {
   });
 }
 // End Form Change Multi
+
+//Delete Item
+const buttonsDelete = document.querySelectorAll("[button-delete]");
+if (buttonsDelete.length > 0) {
+  const formDeleteItem = document.querySelector("#form-delete-item");
+  const path = formDeleteItem.getAttribute("data-path");
+  
+  buttonsDelete.forEach((button) => {
+    button.addEventListener("click", () => {
+      const isConfirm = confirm("Bạn có chắc chắn muốn xóa không?");
+      if(isConfirm){
+        const id = button.getAttribute("data-id"); 
+
+        const action = `${path}/${id}?_method=DELETE`
+        formDeleteItem.action = action;
+        formDeleteItem.submit();
+      }
+      
+    });
+  });
+}
+//End Delete Item

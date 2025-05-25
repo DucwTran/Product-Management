@@ -4,6 +4,10 @@ const systemConfig = require("./config/system")
 const route = require("./routes/client/index.route");
 const routeAdmin = require("./routes/admin/index.route");
 const methodOverride = require("method-override");
+const flash = require("express-flash");
+const cookieParser = require("cookie-parser")
+const session = require("express-session")
+
 require("dotenv").config();
 database.connect();
 
@@ -18,6 +22,10 @@ app.set("view engine", "pug");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(methodOverride("_method"));
+
+app.use(cookieParser('egjkewgnkwleg'));
+app.use(session({cookie: {maxAge: 60000}}));
+app.use(flash());
 
 //App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;

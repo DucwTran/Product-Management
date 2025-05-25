@@ -3,10 +3,12 @@ extends ../../layout/default.pug
 include ../../mixin/search.pug
 include ../../mixin/changeStatus.pug
 include ../../mixin/pagination.pug
+include ../../mixin/alert.pug
 
 block main
-  h1 Danh sách sản phẩm
+  +alert-success(5000)
 
+  h1 Danh sách sản phẩm
   .card.mb-3
     .card-header Bộ lọc và Tìm kiếm
     .card-body
@@ -35,6 +37,7 @@ block main
             th Hình ảnh
             th Tiêu đề 
             th Giá
+            th Vị trí
             th Trạng thái
             th Hành động
         tbody
@@ -46,6 +49,14 @@ block main
                 img(src=item.thumbnail, alt=item.title, width="100px", height="auto")
               td #{item.title}
               td #{item.price}$
+              td 
+                input(
+                  type="number"
+                  value=item.position
+                  style="width: 60px"
+                  min="1"
+                  name="position"
+                )
               td
                 if item.status == "active" 
                   a(href="javascript:;" class="badge badge-success" button-change-status data-status="active" data-id=item.id) Hoạt động
@@ -53,7 +64,7 @@ block main
                   a(href="javascript:;" class="badge badge-warning" button-change-status data-status="inactive" data-id=item.id) Dừng hoạt động
               td
                 button(class="btn btn-warning btn-sm") Sửa
-                button(class="btn btn-danger btn-sm ml-1") Xoá
+                button(class="btn btn-danger btn-sm ml-1" data-id=item.id button-delete) Xoá
 
       +pagination(pagination)
 
@@ -62,6 +73,13 @@ block main
     method="POST"
     id="form-change-status"
     data-path=`${prefixAdmin}/product/change-status`
+  )
+
+  form(
+    action=""
+    method="POST"
+    id="form-delete-item"
+    data-path=`${prefixAdmin}/product/delete`
   )
 
   script(src="/admin/js/product.js")
