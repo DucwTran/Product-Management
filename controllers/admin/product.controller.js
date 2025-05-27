@@ -111,3 +111,29 @@ module.exports.deleteItem = async (req, res) => {
 
   res.redirect("/admin/product");
 };
+
+// [GET] /admin/product/create
+module.exports.create = async (req, res) => {
+  res.render("admin/pages/product/create", {
+    pageTitle: "Tạo mới sản phẩm",    
+  });
+};
+
+// [GET] /admin/product/create
+module.exports.createPost = async (req, res) => {
+  req.body.price = parseInt(req.body.price);
+  req.body.discount = parseInt(req.body.discount);
+  req.body.stock = parseInt(req.body.stock);
+
+  if(req.body.position === "") {
+    const countProducts = await Product.countDocuments();
+    req.body.position = countProducts + 1;
+  } else {
+    req.body.position = parseInt(req.body.position);
+  }
+
+  const product = new Product(req.body);
+  await product.save();
+
+  res.redirect(`/admin/product`);
+};

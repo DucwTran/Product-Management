@@ -24,8 +24,14 @@ block main
   .card.mb-3
     .card-header Danh sách sản phẩm
     .card-body
-      +changeStatus(prefixAdmin)
-
+      .row 
+        .col-8
+          +changeStatus(prefixAdmin)
+        .col-4
+          a(
+            href=`${prefixAdmin}/product/create`
+            class="btn btn-outline-success"
+          ) + Thêm mới
       table(
         class="table table-sm table-hover"
         checkbox-multi
