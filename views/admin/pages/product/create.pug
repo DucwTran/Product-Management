@@ -5,6 +5,7 @@ block main
 
   form(
     action=`http://localhost:3000/admin/product/create`
+    enctype="multipart/form-data"
     id="form-create-product"
     method="POST"
   )
@@ -58,10 +59,11 @@ block main
     div(class="form-group")
       label(for="thumbnail") Ảnh
       input(
-        type="text"
-        class="form-control"
+        type="file"
+        class="form-control-file"
         id="thumbnail"
         name="thumbnail"
+        accept""image/*"
       )
     div(class="form-group")
       label(for="position") Vị trí
