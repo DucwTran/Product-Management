@@ -115,27 +115,89 @@ module.exports.deleteItem = async (req, res) => {
 // [GET] /admin/product/create
 module.exports.create = async (req, res) => {
   res.render("admin/pages/product/create", {
-    pageTitle: "Tạo mới sản phẩm",    
+    pageTitle: "Tạo mới sản phẩm",
   });
 };
 
-// [GET] /admin/product/create
+// [POST] /admin/product/create
 module.exports.createPost = async (req, res) => {
+  if (!res.body.title) {
+    res.flash("error", "Vui lòng nhập tiêu đề");
+    res.redirect("back");
+    return;
+  }
   req.body.price = parseInt(req.body.price);
   req.body.discount = parseInt(req.body.discount);
   req.body.stock = parseInt(req.body.stock);
 
-  if(req.body.position === "") {
+  if (req.body.position === "") {
     const countProducts = await Product.countDocuments();
     req.body.position = countProducts + 1;
   } else {
     req.body.position = parseInt(req.body.position);
   }
-
-  req.body.thumbnail = `/uploads/${req.file.filename}`;
+  if (req.file) {
+    req.body.thumbnail = `/uploads/${req.file.filename}`;
+  }
 
   const product = new Product(req.body);
   await product.save();
 
   res.redirect(`/admin/product`);
+};
+
+// [GET] /admin/product/edit/:id
+module.exports.edit = async (req, res) => {
+  try {
+    const find = {
+      deleted: false,
+      _id: req.params.id,
+    };
+    const product = await Product.findOne(find);
+    res.render("admin/pages/product/edit", {
+      pageTitle: "Chỉnh sửa sản phẩm",
+      product: product,
+    });
+  } catch (error) {
+    res.redirect(`/admin/product`);
+  }
+};
+// [PATCH] /admin/product/edit/:id
+module.exports.editPatch = async (req, res) => {
+  req.body.price = parseInt(req.body.price);
+  req.body.discount = parseInt(req.body.discount);
+  req.body.stock = parseInt(req.body.stock);
+  req.body.position = parseInt(req.body.position);
+
+  if (req.file) {
+    req.body.thumbnail = `/uploads/${req.file.filename}`;
+  }
+
+  try {
+    await Product.updateOne(
+      {
+        _id: req.params.id,
+      },
+      req.body
+    );
+  } catch (error) {}
+  res.redirect("back")
+};
+
+
+// [GET] /admin/product/detail/:id
+module.exports.detail = async (req, res) => {
+  try {
+    const find = {
+      deleted: false,
+      _id: req.params.id,
+    };
+    const product = await Product.findOne(find);
+    res.render("admin/pages/product/detail", {
+      pageTitle: "Chi tiết sản phẩm",
+      product: product,
+    });
+  } catch (error) {
+    res.redirect(`/admin/product`);
+  }
 };

@@ -2,6 +2,7 @@
 
 const Product = require("../../models/product.model");
 
+//[GET] /product
 module.exports.index = async (req, res) => {
   const products = await Product.find({
     status: "active",
@@ -17,4 +18,24 @@ module.exports.index = async (req, res) => {
     pageTitle: "Danh sách sản phẩm",
     products: newProduct,
   });
+};
+
+
+//[GET] /product/:slug        
+module.exports.detail = async (req, res) => {
+  try {
+    const find = {
+      deleted: false,
+      slug: req.params.slug,
+      status: "active"
+    };
+    const product = await Product.findOne(find);
+    res.render("client/pages/product/detail", {
+      pageTitle: product.title,
+      product: product,
+    });
+  } catch (error) {
+    res.redirect(`/product`);
+  }
+
 };
