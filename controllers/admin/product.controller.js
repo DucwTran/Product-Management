@@ -121,7 +121,7 @@ module.exports.create = async (req, res) => {
 
 // [POST] /admin/product/create
 module.exports.createPost = async (req, res) => {
-  if (!res.body.title) {
+  if (!req.body.title) {
     res.flash("error", "Vui lòng nhập tiêu đề");
     res.redirect("back");
     return;
@@ -135,9 +135,6 @@ module.exports.createPost = async (req, res) => {
     req.body.position = countProducts + 1;
   } else {
     req.body.position = parseInt(req.body.position);
-  }
-  if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
   }
 
   const product = new Product(req.body);
