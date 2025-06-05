@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const path = require("path");
 const database = require("./config/database");
 const systemConfig = require("./config/system");
 const route = require("./routes/client/index.route");
@@ -31,6 +32,11 @@ app.use(methodOverride("_method"));
 app.use(cookieParser("egjkewgnkwleg"));
 app.use(session({ cookie: { maxAge: 60000 } }));
 app.use(flash());
+
+app.use(
+  "/tinymce",
+  express.static(path.join(__dirname, "node_modules", "tinymce"))
+);
 
 //App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
