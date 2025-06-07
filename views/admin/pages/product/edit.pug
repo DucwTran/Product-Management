@@ -1,12 +1,13 @@
 extends ../../layout/default.pug
 include ../../mixin/alert.pug
+include ../../mixin/select.pug
 
 block main
   +alert-error(5000)
   h1(class="mb-4") Chỉnh sửa sản phẩm
 
   form(
-    action=`http://localhost:3000/admin/product/edit/${product.id}?_method=PATCH`
+    action=`http://localhost:3001/admin/product/edit/${product.id}?_method=PATCH`
     enctype="multipart/form-data"
     id="form-edit-product"
     method="POST"
@@ -22,6 +23,16 @@ block main
         value=(product && product.title) ? product.title : ''
       )
     div(class="form-group")
+      label(for="product_category_id") Danh mục
+      select(
+        name="product_category_id"
+        id="product_category_id"
+        class="form-control"
+      )
+        option(value="") -- Chọn danh mục cha --
+        if(category)
+          +select-tree(category, 1, product.product_category_id)
+    div(class="form-group")
       label(for="desc") Mô tả
       textarea(
         class="form-control"
@@ -33,20 +44,22 @@ block main
       label(for="price") Giá
       input(
         type="number"
+        step="any"
         class="form-control"
         id="price"
         name="price"
-        value=(product && product.price) ? product.price : ''
+        value=(product) ? product.price : 0
         min="0"
       )
     div(class="form-group")
       label(for="discount") % Giảm giá
       input(
         type="number"
+        step="any"
         class="form-control"
         id="discount"
         name="discount"
-        value=(product && product.discount) ? product.discount : ''
+        value=(product) ? product.discount : 0
         min="0"
       )
     div(class="form-group")
@@ -56,7 +69,7 @@ block main
         class="form-control"
         id="stock"
         name="stock"
-        value=(product && product.stock) ? product.stock : ''
+        value=(product) ? product.stock : 0
         min="0"
       )
     div(class="form-group" upload-image)
@@ -78,13 +91,13 @@ block main
     div(class="form-group")
       label(for="position") Vị trí
       input(
-        type="text"
+        type="number"
         class="form-control"
         id="position"
         name="position"
         placeholder="Tự động tăng"
         min="1"
-        value=(product && product.position) ? product.position : ''
+        value=(product && product.position) ? product.position : 0
       )
     div(class="form-group form-check form-check-inline")
       input(

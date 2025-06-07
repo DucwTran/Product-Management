@@ -37,11 +37,11 @@ module.exports.index = async (req, res) => {
   //End Pagination
 
   //Sort
-  let sort = {}
-  if(req.query.sortKey && req.query.sortValue) {
-    sort[req.query.sortKey] = req.query.sortValue
+  let sort = {};
+  if (req.query.sortKey && req.query.sortValue) {
+    sort[req.query.sortKey] = req.query.sortValue;
   } else {
-    sort.position = "desc"
+    sort.position = "desc";
   }
   //End Sort
   const products = await Product.find(find)
@@ -146,7 +146,7 @@ module.exports.create = async (req, res) => {
 
   res.render("admin/pages/product/create", {
     pageTitle: "Tạo mới sản phẩm",
-    category: newRecords
+    category: newRecords,
   });
 };
 
@@ -181,10 +181,32 @@ module.exports.edit = async (req, res) => {
       deleted: false,
       _id: req.params.id,
     };
+
+    function createTree(arr, parentId = "") {
+      const tree = [];
+      arr.forEach((item) => {
+        if (item.parent_id === parentId) {
+          const newItem = item;
+          const children = createTree(arr, item.id);
+          if (children.length > 0) {
+            newItem.children = children;
+          }
+          tree.push(newItem);
+        }
+      });
+      return tree;
+    }
+
+    const records = await Category.find({
+      deleted: false,
+    });
+    const newRecords = createTree(records);
+
     const product = await Product.findOne(find);
     res.render("admin/pages/product/edit", {
       pageTitle: "Chỉnh sửa sản phẩm",
       product: product,
+      category: newRecords,
     });
   } catch (error) {
     res.redirect(`/admin/product`);
@@ -202,16 +224,12 @@ module.exports.editPatch = async (req, res) => {
   }
 
   try {
-    await Product.updateOne(
-      {
-        _id: req.params.id,
-      },
-      req.body
-    );
-  } catch (error) {}
-  res.redirect("back")
+    await Product.updateOne({ _id: req.params.id }, req.body);
+  } catch (error) {
+    console.error("Update product error:", error);
+  }
+  res.redirect("back");
 };
-
 
 // [GET] /admin/product/detail/:id
 module.exports.detail = async (req, res) => {
