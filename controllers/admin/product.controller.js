@@ -1,4 +1,5 @@
 const Product = require("../../models/product.model");
+const Category = require("../../models/category.model");
 const filterStatusHelper = require("../../helpers/filterStatus");
 const searchHelper = require("../../helpers/search");
 
@@ -122,8 +123,30 @@ module.exports.deleteItem = async (req, res) => {
 
 // [GET] /admin/product/create
 module.exports.create = async (req, res) => {
+  let find = {
+    deleted: false,
+  };
+  function createTree(arr, parentId = "") {
+    const tree = [];
+    arr.forEach((item) => {
+      if (item.parent_id === parentId) {
+        const newItem = item;
+        const children = createTree(arr, item.id);
+        if (children.length > 0) {
+          newItem.children = children;
+        }
+        tree.push(newItem);
+      }
+    });
+    return tree;
+  }
+
+  const records = await Category.find(find);
+  const newRecords = createTree(records);
+
   res.render("admin/pages/product/create", {
     pageTitle: "Tạo mới sản phẩm",
+    category: newRecords
   });
 };
 
