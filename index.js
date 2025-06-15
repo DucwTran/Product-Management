@@ -50,4 +50,3 @@ app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
 });
 
-//route ----(với path đó thì gọi đến)-----> controller -----(không chứa logic nghiệp vụ, tương tác với model, dùng method của model/class để tạo ra data, trả ra giao diện) ----->
