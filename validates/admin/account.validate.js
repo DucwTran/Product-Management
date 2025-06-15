@@ -30,3 +30,17 @@ module.exports.editPatch = (res, req, next) => {
   }
   next();
 };
+
+module.exports.loginPost = (res, req, next) => {
+  if (!res.body.email) {
+    res.flash("error", "Vui lòng nhập email");
+    res.redirect("back");
+    return;
+  }
+  if (!res.body.password) {
+    res.flash("error", "Vui lòng nhập pass");
+    res.redirect("back");
+    return;
+  }
+  next();
+};
