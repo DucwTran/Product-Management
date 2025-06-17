@@ -87,7 +87,13 @@ module.exports.changeMulti = async (req, res) => {
     case "delete-all":
       await Product.updateMany(
         { _id: { $in: ids } },
-        { deleted: "true", deletedAt: new Date() }
+        {
+          deleted: "true",
+          deletedBy: {
+            account_id: res.locals.user.id,
+            deletedAt: new Date(),
+          },
+        }
       );
       req.flash("success", `Xóa thành công ${ids.length} sản phẩm`);
     case "change-position":
@@ -113,7 +119,10 @@ module.exports.deleteItem = async (req, res) => {
     { _id: id },
     {
       deleted: true,
-      deletedAt: new Date(),
+      deletedBy: {
+        account_id: res.locals.user.id,
+        deletedAt: new Date(),
+      },
     }
   );
   req.flash("success", `Xóa thành công sản phẩm`);
@@ -167,6 +176,9 @@ module.exports.createPost = async (req, res) => {
   } else {
     req.body.position = parseInt(req.body.position);
   }
+  res.body.createBy = {
+    account_id: res.locals.user.id,
+  };
 
   const product = new Product(req.body);
   await product.save();

@@ -10,6 +10,7 @@ const methodOverride = require("method-override");
 const flash = require("express-flash");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const moment = require("moment");
 
 console.log("Cloudinary Config:", {
   cloud_name: process.env.CLOUD_NAME,
@@ -40,6 +41,8 @@ app.use(
 
 //App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
+app.locals.monent = moment;
+
 
 app.use(express.static(`${__dirname}/public`));
 //Route
