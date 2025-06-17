@@ -4,12 +4,12 @@ const md5 = require("md5");
 
 // [GET] /admin/auth
 module.exports.login = (req, res) => {
-  if (res.cookies.token) {
+  if (req.cookies.token) {
     const user = Account.findOne({ token: res.cookies.token });
     if (!user) {
       res.redirect(`${systemConfig.prefixAdmin}/auth/login`);
     } else {
-      res.redirect(`${systemConfig.prefixAdmin}/dashboard`); 
+      res.redirect(`${systemConfig.prefixAdmin}/dashboard`);
     }
   } else {
     res.render("admin/pages/auth/login", {

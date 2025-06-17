@@ -14,7 +14,7 @@ router.patch("/edit/:id", controller.editPatch);
 router.get("/permissions", controller.permissions);
 router.patch("/permissions", controller.permissionsPatch);
 
-
+//với rbac, phải che UI và check ở controler/middleware 
 
 
 module.exports = router;
