@@ -15,6 +15,7 @@ module.exports.requireAuth = async (req, res, next) => {
       const role = await Role.findOne({
         _id: user.role_id,
       }).select("title permissions");
+      req.user = user;
       res.locals.user = user; // trả về 1 biến user ở local, bất kì file pug nào cũng có: user
       res.locals.role = role; // trả về 1 biến user ở local, bất kì file pug nào cũng có: role
       next();
