@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema(
     discount: Number,
     status: String,
     createdBy: {
+      //Dùng để logs action chi tiết
       account_id: String,
       createAt: {
         type: Date,
@@ -28,8 +29,14 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
     deletedBy: {
+      //Dùng để logs action chi tiết
       account_id: String,
-      deletedAt: Date, //không dùng default vì chỉ có 1 lần nha, phải update khi xóa
+      deletedAt: Date,
+    },
+    updatedBy: {
+      //Dùng để logs action chi tiết - muốn thêm thì cứ lưu logs khi thực hiện hành động vào các field này
+      account_id: String,
+      createdAt: Date,
     },
     position: Number,
     slug: { type: String, slug: "title", unique: true },
